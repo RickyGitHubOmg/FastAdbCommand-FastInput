@@ -1,0 +1,30 @@
+#!/system/bin/sh
+
+PROCESS=$(pidof fastinput)
+if [ "$1" == "stop" ] ; then
+    if [ -n "$PROCESS" ]; then
+        kill -9 $PROCESS
+    fi
+elif [ "$1" == "start" ] ; then
+    if [ -n "$PROCESS" ]; then
+        kill -9 $PROCESS
+    fi
+    CLASSPATH=/data/local/tmp/fastadbcommand.dex exec app_process /system/bin --nice-name=fastinput com.ricky.fastadbcommand.Main /system/framework/input.jar com.android.commands.input.Input /data/local/tmp/command_monitor /data/local/tmp/ &
+else
+    if [ -n "$PROCESS" ]; then
+        for PARAM in "$@"
+        do
+            case "$PARAM" in
+                 *\ * )
+                       PARAMS="$PARAMS \"$PARAM\""
+                      ;;
+                   *)
+                       PARAMS="$PARAMS $PARAM"
+                       ;;
+            esac
+        done
+        echo $PARAMS >> /data/local/tmp/command_monitor
+    else
+        echo "Please run \"fastinput start\" first"
+    fi
+fi
